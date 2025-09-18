@@ -4,14 +4,14 @@ A graphical tool to create calendar files (.ics) from CSV exports of lessons/eve
 
 ## Download
 
-Download the Windows executable (`gui.exe`) from the [v1.0 Release page](https://github.com/Leonardo-Davio/csv--calendar-Python/releases/tag/v1.0).
+Download the Windows executable (`csv--calendar.exe`) from the [v1.1 Release page](https://github.com/Leonardo-Davio/csv--calendar-Python/releases/tag/v1.1).
 
 No installation or Python required.  
-Just double-click `gui.exe` to start the application.
+Just double-click `csv--calendar.exe` to start the application.
 
 ## How to Use
 
-1. **Open** `gui.exe`.
+1. **Open** `csv--calendar.exe`.
 2. **Select** your CSV file exported from Kairos Unifi.
 3. **Choose** the subject/course to export.
 4. **Optionally**, customize course and room names.
