@@ -15,6 +15,11 @@ courses = []
 selected_subject = ""
 room_vars = {}
 
+
+def show_message(msg, title="Messaggio"):
+    messagebox.showinfo(title, msg)
+
+
 class App(ctk.CTk):
     def __init__(self):
         super().__init__()
@@ -26,21 +31,17 @@ class App(ctk.CTk):
         self.card = ctk.CTkFrame(self, corner_radius=20)
         self.card.pack(padx=20, pady=10, fill="both", expand=True)
 
-        # Titolo
         title_label = ctk.CTkLabel(self.card, text="Crea calendario da CSV", font=("Segoe UI Bold", 22))
         title_label.pack(pady=(20, 5))
 
-        # Seleziona CSV
         self.csv_button = ctk.CTkButton(self.card, text="Seleziona CSV delle lezioni", command=self.load_csv_dialog,
                                         width=220, height=38, font=("Segoe UI", 14))
         self.csv_button.pack(pady=(16, 12))
 
-        # ComboBox Materia
         self.subject_combo = ctk.CTkComboBox(self.card, values=[], state="disabled", command=self.subject_selected,
                                              width=220, font=("Segoe UI", 13))
         self.subject_combo.pack(pady=8)
 
-        # Nome corso personalizzato
         self.custom_course_name = ctk.StringVar(value="")
         name_label = ctk.CTkLabel(self.card, text="Nome corso personalizzato:", font=("Segoe UI", 12))
         name_label.pack(pady=(20, 2))
@@ -48,11 +49,9 @@ class App(ctk.CTk):
                                               font=("Segoe UI", 13))
         self.custom_name_entry.pack(pady=(0, 12))
 
-        # Frame sedi
         self.venues_frame = ctk.CTkFrame(self.card, fg_color="#232323", corner_radius=15)
         self.venues_frame.pack(fill="x", padx=8, pady=8)
 
-        # Frame bottoni affiancati
         btn_row = ctk.CTkFrame(self.card, fg_color="transparent")
         btn_row.pack(pady=(18, 0))
 
@@ -64,18 +63,13 @@ class App(ctk.CTk):
                                              width=190, height=38, font=("Segoe UI", 14))
         self.save_map_button.pack(side="left", padx=10)
 
-        # Label feedback
         self.feedback_label = ctk.CTkLabel(self.card, text="", font=("Segoe UI", 12), text_color="lightgray")
         self.feedback_label.pack(pady=(18, 0))
 
-        # Frame separato per pulsante Esci, ben distanziato
         self.exit_frame = ctk.CTkFrame(self.card, fg_color="transparent")
         self.exit_frame.pack(fill="x", pady=(32, 0))
 
         self.exit_button = None
-
-    def show_message(self, msg, title="Messaggio"):
-        messagebox.showinfo(title, msg)
 
     def load_csv_dialog(self):
         file_path = filedialog.askopenfilename(filetypes=[("CSV files", "*.csv")])
@@ -90,7 +84,7 @@ class App(ctk.CTk):
                 self.subject_combo.set(courses[0])
                 self.subject_selected(courses[0])
         except Exception as e:
-            self.show_message(f"Errore nel caricamento del file: {e}", title="Errore")
+            show_message(f"Errore nel caricamento del file: {e}", title="Errore")
 
     def update_venues(self):
         global room_vars

@@ -1,9 +1,31 @@
 import json
-import re
 import uuid
 from datetime import datetime
 import os
 import csv
+
+
+def extract_room_num_string(raw_loc):
+    try:
+        number = raw_loc.split("[")[0].strip()
+        if number == "Auditorium A":
+            return "Aud A"
+        elif number == "Auditorium B":
+            return "Aud B"
+        elif number.startswith("Aula"):
+            return number.split(" ")[1]
+    except IndexError:
+        pass
+    return None
+
+
+def extract_room_string(raw_loc):
+    try:
+        room = raw_loc.split("[")[1].split("]")[0]
+        return room.split("(")[0].strip()
+    except IndexError:
+        return None
+
 
 class LessonManager:
     def __init__(self, csv_path=None):
@@ -51,45 +73,13 @@ class LessonManager:
                     courses.add(course)
         return sorted(courses)
 
-    def extract_location_abbreviation(self, raw_loc):
-        # Extract location abbreviation from room_map.json or fallback to full name
-        # Extract location part (inside [...]), e.g., [C.Didat.Morgagni (Piano Terra)]
-        location_abbr = ""
-        m = re.search(r"\[([^]]+)]", raw_loc)
-        if m:
-            full_location = m.group(1).split('(')[0].strip()
-            location_abbr = self.room_map.get(full_location, full_location)
-        return location_abbr
-
-    def extract_aula_abbreviation(self, raw_loc):
-        # Auditorium A/B
-        if "Auditorium A" in raw_loc:
-            return self.room_map.get("Auditorium A", "Aud A")
-        elif "Auditorium B" in raw_loc:
-            return self.room_map.get("Auditorium B", "Aud B")
-        # Aula number
-        n = re.search(r"Aula\s*([0-9]+)", raw_loc)
-        if n:
-            return n.group(1)
-        # Other room types? Add more custom logic here if needed
-        return ""
-
     def extract_full_room_string(self, raw_loc):
-        # Returns a string with location abbreviation + aula abbreviation (e.g., "CDm 001" or "CDm Aud A")
-        location_abbr = self.extract_location_abbreviation(raw_loc)
-        aula_abbr = self.extract_aula_abbreviation(raw_loc)
-        if location_abbr and aula_abbr:
-            return f"{location_abbr} {aula_abbr}"
-        elif location_abbr:
-            return location_abbr
-        elif aula_abbr:
-            return aula_abbr
-        else:
-            # Fallback: try to get something meaningful
-            m = re.search(r"Aula\s*([0-9]+)", raw_loc)
-            if m:
-                return m.group(1)
-            return raw_loc
+        room_name = extract_room_string(raw_loc)
+        number = extract_room_num_string(raw_loc)
+        key = room_name if room_name else ""
+        mapped = self.room_map.get(key, key)
+        result = f"{mapped} {number}".strip()
+        return result
 
     def get_rooms_for_subject(self, subject):
         rooms = set()
@@ -98,7 +88,7 @@ class LessonManager:
                 course = row[2].split('-')[0].strip() if row[2] else None
                 course = course.title()
                 if course == subject:
-                    venue = self.extract_full_room_string(row[5])
+                    venue = extract_room_string(row[5])
                     rooms.add(venue)
         return sorted(rooms)
 
